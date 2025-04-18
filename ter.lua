@@ -3,6 +3,7 @@ local plr = game.Players.LocalPlayer
 local chr = plr.Character or plr.CharacterAdded:Wait()
 
 local targetPosition = Vector3.new(-424, 30, -49041) -- Target seat position
+local walkTargetPosition = Vector3.new(-342.11, 3, -49045.12) -- Walk target position
 
 -- Auto Headshot Functionality
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -14,7 +15,7 @@ local workspace = game.Workspace
 
 -- Configuration
 local SEARCH_RADIUS = 350    -- Detect NPCs within 350 studs
-local SHOOT_RADIUS = 300    -- Increased auto-shoot range
+local SHOOT_RADIUS = 300     -- Increased auto-shoot range
 local TELEPORT_OFFSET = Vector3.new(0, 0, -2) -- Moves bullet behind NPC's head
 
 local SupportedWeapons = {
@@ -114,14 +115,17 @@ while true do
     -- Check if the character is seated
     if chr.Humanoid.SeatPart ~= nil then
         print("Successfully seated!")
-        
+
         -- Wait for 2 seconds, then jump
         task.wait(2)
         game:GetService("VirtualInputManager"):SendKeyEvent(true, "Space", false, game)
         task.wait()
         game:GetService("VirtualInputManager"):SendKeyEvent(false, "Space", false, game)
 
-        break -- Exit the loop once seated and jumped
+        -- Walk normally to the target position
+        chr:MoveTo(walkTargetPosition)
+
+        break -- Exit the loop once seated, jumped, and walking started
     end
 
     -- Search for a seat at the target position and try to sit
