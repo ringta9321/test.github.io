@@ -1,4 +1,3 @@
--- Persistent Teleport and Sit Logic
 local plr = game.Players.LocalPlayer
 local chr = plr.Character or plr.CharacterAdded:Wait()
 
@@ -116,16 +115,20 @@ while true do
     if chr.Humanoid.SeatPart ~= nil then
         print("Successfully seated!")
 
-        -- Wait for 2 seconds, then jump
-        task.wait(2)
+        -- Wait for 1 second, then jump
+        task.wait(1)
         game:GetService("VirtualInputManager"):SendKeyEvent(true, "Space", false, game)
         task.wait()
         game:GetService("VirtualInputManager"):SendKeyEvent(false, "Space", false, game)
 
-        -- Walk normally to the target position
-        chr:MoveTo(walkTargetPosition)
+        -- Continuously try to move to the target position
+        while (chr.PrimaryPart.Position - walkTargetPosition).Magnitude > 1 do
+            chr:MoveTo(walkTargetPosition)
+            task.wait(0.1) -- Keep retrying movement with a small delay
+        end
 
-        break -- Exit the loop once seated, jumped, and walking started
+        print("Successfully moved to the target position!")
+        break -- Exit the loop once seated, jumped, and moved to the target position
     end
 
     -- Search for a seat at the target position and try to sit
