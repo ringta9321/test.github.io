@@ -1,5 +1,7 @@
+-- Persistent Teleport and Sit Logic
 local plr = game.Players.LocalPlayer
 local chr = plr.Character or plr.CharacterAdded:Wait()
+local humanoid = chr:WaitForChild("Humanoid") -- Ensure Humanoid exists
 
 local targetPosition = Vector3.new(-424, 30, -49041) -- Target seat position
 local walkTargetPosition = Vector3.new(-342.11, 3, -49045.12) -- Walk target position
@@ -121,17 +123,20 @@ while true do
         task.wait()
         game:GetService("VirtualInputManager"):SendKeyEvent(false, "Space", false, game)
 
-        -- Normal walking to the target position
-        while (chr.PrimaryPart.Position - walkTargetPosition).Magnitude > 1 do
-            chr:MoveTo(walkTargetPosition)
-            task.wait(0.1) -- Repeatedly try to move until close enough to the target
+        -- Walk to the target position using MoveTo
+        humanoid:MoveTo(walkTargetPosition) -- Start walking to the target position
+        local success, message = humanoid.MoveToFinished:Wait() -- Wait for the movement to finish
+
+        if not success then
+            warn("Failed to reach the target position!")
+        else
+            print("Successfully walked to the target position!")
         end
 
-        print("Successfully walked to the target position!")
         break -- Exit the loop once seated, jumped, and walked to the target position
     end
 
-    -- Search for a seat at the target position and try to sit
+    -- Logic to search for the seat and try to sit remains unchanged
     local baseplates = workspace:FindFirstChild("Baseplates")
     if baseplates then
         local finalBasePlate = baseplates:FindFirstChild("FinalBasePlate")
