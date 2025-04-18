@@ -4,7 +4,7 @@ local chr = plr.Character or plr.CharacterAdded:Wait()
 local humanoid = chr:WaitForChild("Humanoid") -- Ensure Humanoid exists
 
 local targetPosition = Vector3.new(-424, 30, -49041) -- Target seat position
-local walkTargetPosition = Vector3.new(-342.11, 3, -49045.12) -- Walk target position
+local walkTargetPosition = Vector3.new(-341.88, 3, -49045) -- New walk target position
 
 -- Auto Headshot Functionality
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -123,8 +123,8 @@ while true do
         task.wait()
         game:GetService("VirtualInputManager"):SendKeyEvent(false, "Space", false, game)
 
-        -- Walk to the target position using MoveTo
-        humanoid:MoveTo(walkTargetPosition) -- Start walking to the target position
+        -- Walk to the new target position using MoveTo
+        humanoid:MoveTo(walkTargetPosition) -- Start walking to the new target position
         local success, message = humanoid.MoveToFinished:Wait() -- Wait for the movement to finish
 
         if not success then
@@ -133,7 +133,7 @@ while true do
             print("Successfully walked to the target position!")
         end
 
-        break -- Exit the loop once seated, jumped, and walked to the target position
+        break -- Exit the loop once seated, jumped, and walked to the new target position
     end
 
     -- Logic to search for the seat and try to sit remains unchanged
