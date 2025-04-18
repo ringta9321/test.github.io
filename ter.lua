@@ -121,14 +121,14 @@ while true do
         task.wait()
         game:GetService("VirtualInputManager"):SendKeyEvent(false, "Space", false, game)
 
-        -- Continuously try to move to the target position
+        -- Normal walking to the target position
         while (chr.PrimaryPart.Position - walkTargetPosition).Magnitude > 1 do
             chr:MoveTo(walkTargetPosition)
-            task.wait(0.1) -- Keep retrying movement with a small delay
+            task.wait(0.1) -- Repeatedly try to move until close enough to the target
         end
 
-        print("Successfully moved to the target position!")
-        break -- Exit the loop once seated, jumped, and moved to the target position
+        print("Successfully walked to the target position!")
+        break -- Exit the loop once seated, jumped, and walked to the target position
     end
 
     -- Search for a seat at the target position and try to sit
