@@ -1,72 +1,72 @@
-while true do
-    task.wait(1) -- Wait 1 second between each execution
+local BindableFunction = Instance.new("BindableFunction")
+BindableFunction.OnInvoke = function()
+    setclipboard("https://youtube.com/@amreeeshi?si=EfTtiaBeM9kdl0nX")
+end
 
-    -- Collect RevolverAmmo
-    local player = game.Players.LocalPlayer
-    local char = player.Character or player.CharacterAdded:Wait()
-    local hrp = char:WaitForChild("HumanoidRootPart") -- Wait for HumanoidRootPart
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Successfully Executed!",
+    Text = "By: Amare Scripts Scripts on YouTube",
+    Icon = "",
+    Duration = 100,
+    Button1 = "Subscribe!",
+    Callback = BindableFunction
+})
 
-    local items = game.Workspace:WaitForChild("RuntimeItems")
+-- Delete invischair if it exist btw
+local chair = workspace:FindFirstChild("invischair")
+if chair then
+    chair:Destroy()
+end
 
-    -- Check for nearby RevolverAmmo and collect them
-    for _, ammo in pairs(items:GetChildren()) do
-        if ammo:IsA("Model") and ammo.Name == "RevolverAmmo" and ammo.PrimaryPart then
-            local dist = (ammo.PrimaryPart.Position - hrp.Position).Magnitude -- Calculate distance
-            if dist < 100 then -- Check if within 100 studs
-                local rem = game.ReplicatedStorage.Packages.RemotePromise.Remotes.C_ActivateObject
-                rem:FireServer(ammo) -- Activate the object
-            end
-        else
-            warn("PrimaryPart missing or object name mismatch for RevolverAmmo!")
-        end
+-- Make humanoidrootpart transparent
+local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+if hrp then
+    hrp.Transparency = 1
+end
+
+-- Detect and delete new maximgun parts
+workspace.DescendantAdded:Connect(function(descendant)
+    if descendant.Name == "MaximGun" then
+        task.wait()
+        descendant:Destroy()
     end
+end)
 
-    -- Interact with OpenableCrate
-    local humanoid = char:WaitForChild("Humanoid") -- Ensure Humanoid exists
-    local camera = workspace.CurrentCamera
+-- Create invisible seat fo some reason
+local seat = Instance.new("Seat", workspace)
+seat.Anchored = false
+seat.CanCollide = false
+seat.Name = "invischair"
+seat.Transparency = 1
+seat.Position = Vector3.new(-25.95, 84, 3537.55)
 
-    -- Access the OpenableCrate model
-    local openableCrate = game.Workspace:WaitForChild("RuntimeItems"):WaitForChild("OpenableCrate")
+-- Weld seat to character's torso or upper torso
+local weld = Instance.new("Weld")
+weld.Part0 = seat
+weld.Part1 = game.Players.LocalPlayer.Character and (
+    game.Players.LocalPlayer.Character:FindFirstChild("Torso")
+    or game.Players.LocalPlayer.Character:FindFirstChild("UpperTorso")
+)
+weld.Parent = seat
 
-    if openableCrate then
-        print("OpenableCrate found!")
+-- Set humanoidrootpart transparency again just to be sure
+local hrp2 = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+if hrp2 then
+    hrp2.Transparency = 1
+end
 
-        -- Ensure the model has a PrimaryPart assigned
-        local targetPart = openableCrate.PrimaryPart or openableCrate:FindFirstChildWhichIsA("BasePart")
-        if targetPart then
-            -- Move the character to the OpenableCrate's position
-            humanoid:MoveTo(targetPart.Position)
-            local success, message = humanoid.MoveToFinished:Wait()
-            if not success then
-                warn("Failed to move to OpenableCrate:", message)
-            else
-                print("Reached OpenableCrate!")
+-- Disable all vehicleseats
+for _, part in pairs(workspace:GetDescendants()) do
+    if part:IsA("VehicleSeat") then
+        part.Disabled = false
+    end
+end
 
-                -- Make the character face the OpenableCrate
-                char:SetPrimaryPartCFrame(CFrame.new(char.PrimaryPart.Position, targetPart.Position))
-
-                -- Set the Camera to focus on the OpenableCrate
-                camera.CameraType = Enum.CameraType.Scriptable
-                camera.CFrame = CFrame.new(targetPart.Position + Vector3.new(0, 3, -5), targetPart.Position)
-
-                print("Camera is now focused on OpenableCrate!")
-
-                -- Open the crate using the remote event
-                local args = {
-                    [1] = game.Workspace:WaitForChild("RuntimeItems"):FindFirstChild("OpenableCrate")
-                }
-                game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("RemotePromise"):WaitForChild("Remotes"):WaitForChild("C_ActivateObject"):FireServer(unpack(args))
-                
-                print("OpenableCrate has been activated!")
-
-                -- Restore the camera after interacting
-                camera.CameraType = Enum.CameraType.Custom
-                print("Camera restored!")
-            end
-        else
-            warn("OpenableCrate does not have a valid position! Assign a PrimaryPart or add a BasePart.")
+-- Remove all baseparts and Decals named "MaximGun"
+for _, obj in pairs(workspace:GetDescendants()) do
+    if obj:IsA("BasePart") or obj:IsA("Decal") then
+        if obj.Name == "MaximGun" then
+            obj:Destroy()
         end
-    else
-        print("OpenableCrate not found in Workspace hierarchy!")
     end
 end
